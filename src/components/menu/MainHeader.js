@@ -1,17 +1,16 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {NavLink} from 'react-router-dom';
 import {Header} from 'antd/es/layout/layout';
 import Menu from 'antd/es/menu';
 import Avatar from 'antd/es/avatar/avatar';
+import {changeLoginFormAction, loginAction} from "../../redux/auth-reducer";
+import {connect} from "react-redux";
 
-function MainHeader() {
-    const UserList = ['U', 'Lucy', 'Tom', 'Edward'];
-    const ColorList = ['#f56a00', '#7265e6', '#ffbf00', '#00a2ae'];
-    const GapList = [4, 3, 2, 1];
+function MainHeader(props) {
 
-    const [user, setUser] = useState(UserList[0]);
-    const [color, setColor] = useState(ColorList[0]);
-    const [gap, setGap] = useState(GapList[0]);
+    const getFirstLetter = (str) => {
+        return str ? str.slice(0,1) : "";
+    }
 
     return (
         <Header className="header">
@@ -28,9 +27,8 @@ function MainHeader() {
                     <Avatar
                         className="profile-img"
                         size="large"
-                        gap={gap}
                     >
-                        {user}
+                        {getFirstLetter(props.user.name)}
                     </Avatar>
                 </NavLink>
             </div>
@@ -38,4 +36,21 @@ function MainHeader() {
     )
 }
 
-export default MainHeader;
+let mapStateToProps = (state) => {
+    return {
+        user: state.profile.user
+    }
+}
+
+let mapDispatchToProps = (dispatch) => {
+    return {
+        login: (isLogin) => {
+            dispatch(loginAction(isLogin))
+        },
+        changeLoginForm: (controls) => {
+            dispatch(changeLoginFormAction(controls))
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainHeader);

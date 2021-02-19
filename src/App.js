@@ -1,48 +1,40 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.sass';
 import 'antd/dist/antd.css';
-import MainHeader from './components/menu/MainHeader';
-import {Route, BrowserRouter} from 'react-router-dom';
-import { Redirect } from "react-router-dom";
-import LearningPage from './components/learning/LearningPage';
-import Profile from './components/Profile';
-import MainPage from './components/main/main-page/MainPage';
-import Layout from 'antd/es/layout';
-import Login from './components/login/Login';
+import {connect} from "react-redux";
+import MainHeader from "./components/menu/MainHeader";
+import {Redirect, Route} from "react-router-dom";
+import MainPage from "./components/main/main-page/MainPage";
+import Login from "./components/login/Login";
+import LearningPage from "./components/learning/LearningPage";
+import Profile from "./components/Profile";
+import Layout from "antd/es/layout";
 
 class App extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            profile: null
-        };
-    }
 
-    renderHeader() {
-        if (this.state.profile) {
-            return (<MainHeader/>)
-        }
-    }
     render() {
         return (
             <Layout className='full-height'>
-                <BrowserRouter>
-                    {this.renderHeader()}
-                    {
-                        this.state.profile ?
-                            <Redirect to="/" /> :
-                            <Redirect to="/login" />
-                    }
+                { this.props.profile.authorized ? <MainHeader/> : "" }
+                {
+                    this.props.profile.authorized ?
+                        <Redirect to="/" /> :
+                        <Redirect to="/login" />
+                }
 
-                    <Route exact path='/' component={MainPage}/>
-                    <Route exact path='/login' component={Login}/>
-                    <Route path='/learning' component={LearningPage}/>
-                    <Route path='/profile' component={Profile}/>
-                </BrowserRouter>
+                <Route exact path='/' component={MainPage}/>
+                <Route exact path='/login' component={Login}/>
+                <Route path='/learning' component={LearningPage}/>
+                <Route path='/profile' component={Profile}/>
             </Layout>
-
         )
     }
 }
 
-export default App;
+let mapStateToProps = (state) => {
+    return {
+        profile: state.profile
+    }
+}
+
+export default connect(mapStateToProps, null)(App);
